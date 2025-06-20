@@ -4,78 +4,96 @@
 //
 //  Created by Alex on 11/6/25.
 //
-
 import SwiftUI
 
 struct NCreateNoteView: View {
-    @StateObject var viewModel: NCreateNoteViewModel = NCreateNoteViewModel()
-
+    @StateObject var viewModel = NCreateNoteViewModel()
     
     var onNoteCreated: ((NCard) -> Void)?
     
-    func onTap() {
-//        create note
+    private func onTap() {
         let card = viewModel.createNote()
-        
         print("Esta es tu nueva card \(card)")
         onNoteCreated?(card)
     }
     
     var body: some View {
         ScrollView {
-            VStack {
-                Text("Create new note")
-                    .font(.largeTitle)
-                    .bold()
+            VStack(alignment: .leading, spacing: 20) {
+                
+                Text("Crear nueva nota")
+                    .font(.largeTitle.bold())
                     .padding(.bottom, 10)
                 
-                TextField("Title", text: $viewModel.title)
-                    .font(.headline)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
-                
-                TextEditor(text: $viewModel.text)
-                    .scrollContentBackground(.hidden)
-                    .font(.body)
-                    .frame(height: 150)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
-            }
-            
-            HStack {
-                Text("Size:")
-                Spacer()
-                Picker("Sizes:", selection: $viewModel.type ) {
-                    Text("Small").tag(NCardType.small)
-                    Text("Medium").tag(NCardType.medium)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Título")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("Ej: Tarea pendiente", text: $viewModel.title)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
                 }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Contenido")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextEditor(text: $viewModel.text)
+                        .scrollContentBackground(.hidden)
+                        .frame(height: 150)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                }
+                
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Tamaño de nota")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Picker("", selection: $viewModel.type) {
+                            Text("Pequeña").tag(NCardType.small)
+                            Text("Mediana").tag(NCardType.medium)
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: 200)
+                    }
+                    
+                    Toggle(isOn: $viewModel.isFavorite) {
+                        Text("Marcar como favorita")
+                    }
+                }
+                
+                Button(action: onTap) {
+                    Text("Guardar nota")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .shadow(radius: 2)
+                }
+                .padding(.top)
             }
             .padding()
-            Toggle("Favorite mark", isOn: $viewModel.isFavorite)
-            
-            Button {
-                onTap()
-            } label: {
-                Text("Save note")
-                    .font(.headline)
-                    .foregroundStyle(Color.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(8)
-            }
-            .padding(.top, 20)
+            .background(Color.white)
+            .cornerRadius(20)
+            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+            .padding()
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(16)
-        .padding()
-        .background(Color.cyan.opacity(0.2))
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.cyan.opacity(0.15), Color.blue.opacity(0.05)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        )
     }
 }
-
 
 #Preview {
     NCreateNoteView()
